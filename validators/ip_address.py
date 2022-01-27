@@ -1,8 +1,10 @@
+from typing import List
 from .utils import validator
 
+Groups = List[str]
 
 @validator
-def ipv4(value):
+def ipv4(value: str) -> bool:
     """
     Return whether or not given value is a valid IP version 4 address.
 
@@ -23,14 +25,14 @@ def ipv4(value):
 
     :param value: IP address string to validate
     """
-    groups = value.split('.')
+    groups: Groups = value.split('.')
     if len(groups) != 4 or any(not x.isdigit() for x in groups):
         return False
     return all(0 <= int(part) < 256 for part in groups)
 
 
 @validator
-def ipv4_cidr(value):
+def ipv4_cidr(value: str) -> bool:
     """
     Return whether or not given value is a valid CIDR-notated IP version 4
     address range.
@@ -45,6 +47,8 @@ def ipv4_cidr(value):
         >>> ipv4_cidr('1.1.1.1')
         ValidationFailure(func=ipv4_cidr, args={'value': '1.1.1.1'})
     """
+    prefix: str
+    suffix: str
     try:
         prefix, suffix = value.split('/', 2)
     except ValueError:
@@ -55,7 +59,7 @@ def ipv4_cidr(value):
 
 
 @validator
-def ipv6(value):
+def ipv6(value: str) -> bool:
     """
     Return whether or not given value is a valid IP version 6 address
     (including IPv4-mapped IPv6 addresses).
@@ -83,10 +87,10 @@ def ipv6(value):
 
     :param value: IP address string to validate
     """
-    ipv6_groups = value.split(':')
+    ipv6_groups: Groups = value.split(':')
     if len(ipv6_groups) == 1:
         return False
-    ipv4_groups = ipv6_groups[-1].split('.')
+    ipv4_groups: Groups = ipv6_groups[-1].split('.')
 
     if len(ipv4_groups) > 1:
         if not ipv4(ipv6_groups[-1]):
@@ -120,7 +124,7 @@ def ipv6(value):
 
 
 @validator
-def ipv6_cidr(value):
+def ipv6_cidr(value: str) -> bool:
     """
     Returns whether or not given value is a valid CIDR-notated IP version 6
     address range.
@@ -135,6 +139,8 @@ def ipv6_cidr(value):
         >>> ipv6_cidr('::1')
         ValidationFailure(func=ipv6_cidr, args={'value': '::1'})
     """
+    prefix: str
+    suffix: str
     try:
         prefix, suffix = value.split('/', 2)
     except ValueError:

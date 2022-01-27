@@ -1,9 +1,10 @@
+from typing import Union, Optional, Any
 from .extremes import Max, Min
 from .utils import validator
 
 
 @validator
-def between(value, min=None, max=None):
+def between(value: Any, min: Any=None, max: Any=None) -> bool:
     """
     Validate that a number is between minimum and/or maximum value.
 
@@ -58,4 +59,4 @@ def between(value, min=None, max=None):
     if min_gt_max:
         raise AssertionError('`min` cannot be more than `max`.')
 
-    return min <= value and max >= value
+    return min <= value <= max

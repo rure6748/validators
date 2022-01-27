@@ -1,3 +1,4 @@
+from typing import Optional, Union
 import re
 
 from .utils import validator
@@ -9,8 +10,11 @@ pattern = re.compile(
     r'[A-Za-z]$'  # Last character of the gTLD
 )
 
+# Optional[typing.AnyStr] is not read correctly by some linters.
+AnyStr = Optional[Union[str, bytes]]
 
-def to_unicode(obj, charset='utf-8', errors='strict'):
+
+def to_unicode(obj: AnyStr, charset: str='utf-8', errors: str='strict') -> Optional[str]:
     if obj is None:
         return None
     if not isinstance(obj, bytes):
@@ -19,7 +23,7 @@ def to_unicode(obj, charset='utf-8', errors='strict'):
 
 
 @validator
-def domain(value):
+def domain(value: AnyStr) -> bool:
     """
     Return whether or not given value is a valid domain.
 
@@ -49,6 +53,6 @@ def domain(value):
     :param value: domain string to validate
     """
     try:
-        return pattern.match(to_unicode(value).encode('idna').decode('ascii'))
+        return bool(pattern.match(to_unicode(value).encode('idna').decode('ascii')))
     except (UnicodeError, AttributeError):
         return False

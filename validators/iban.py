@@ -1,3 +1,4 @@
+from typing import Pattern
 import re
 
 from .utils import validator
@@ -5,10 +6,10 @@ from .utils import validator
 regex = (
     r'^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$'
 )
-pattern = re.compile(regex)
+pattern: Pattern = re.compile(regex)
 
 
-def char_value(char):
+def char_value(char) -> int:
     """A=10, B=11, ..., Z=35
     """
     if char.isdigit():
@@ -17,20 +18,19 @@ def char_value(char):
         return 10 + ord(char) - ord('A')
 
 
-def modcheck(value):
+def modcheck(value: str) -> bool:
     """Check if the value string passes the mod97-test.
     """
     # move country code and check numbers to end
-    rearranged = value[4:] + value[:4]
+    rearranged: str = value[4:] + value[:4]
     # convert letters to numbers
-    converted = [char_value(char) for char in rearranged]
-    # interpret as integer
-    integerized = int(''.join([str(i) for i in converted]))
+
+    integerized: int = int(''.join(str(char_value(char)) for char in rearranged))
     return (integerized % 97 == 1)
 
 
 @validator
-def iban(value):
+def iban(value: str) -> bool:
     """
     Return whether or not given value is a valid IBAN code.
 
@@ -49,4 +49,4 @@ def iban(value):
 
     :param value: IBAN string to validate
     """
-    return pattern.match(value) and modcheck(value)
+    return bool(pattern.match(value)) and modcheck(value)

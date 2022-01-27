@@ -1,12 +1,13 @@
+from typing import Pattern
 import re
 
 from .utils import validator
 
-slug_regex = re.compile(r'^[-a-zA-Z0-9_]+$')
+slug_regex: Pattern = re.compile(r'^[-a-zA-Z0-9_]+$')
 
 
 @validator
-def slug(value):
+def slug(value: str) -> bool:
     """
     Validate whether or not given value is valid slug.
 
@@ -25,4 +26,4 @@ def slug(value):
 
     :param value: value to validate
     """
-    return slug_regex.match(value)
+    return bool(slug_regex.match(value))

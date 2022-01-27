@@ -1,3 +1,4 @@
+from typing import Pattern
 from __future__ import absolute_import
 
 import re
@@ -5,7 +6,7 @@ from uuid import UUID
 
 from .utils import validator
 
-pattern = re.compile(r'^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$')
+pattern: Pattern = re.compile(r'^[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}$')
 
 
 @validator

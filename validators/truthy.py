@@ -2,7 +2,7 @@ from .utils import validator
 
 
 @validator
-def truthy(value):
+def truthy(value: str) -> bool:
     """
     Validate that given value is not a falsey value.
 
@@ -33,7 +33,4 @@ def truthy(value):
 
     .. versionadded:: 0.2
     """
-    return (
-        value and
-        (not isinstance(value, str) or value.strip())
-    )
+    return bool(value and (not isinstance(value, str) or value.strip()))

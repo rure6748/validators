@@ -1,31 +1,32 @@
+from typing import Pattern
 import re
 
 from .utils import validator
 
-md5_regex = re.compile(
+md5_regex: Pattern = re.compile(
     r"^[0-9a-f]{32}$",
     re.IGNORECASE
 )
-sha1_regex = re.compile(
+sha1_regex: Pattern = re.compile(
     r"^[0-9a-f]{40}$",
     re.IGNORECASE
 )
-sha224_regex = re.compile(
+sha224_regex: Pattern = re.compile(
     r"^[0-9a-f]{56}$",
     re.IGNORECASE
 )
-sha256_regex = re.compile(
+sha256_regex: Pattern = re.compile(
     r"^[0-9a-f]{64}$",
     re.IGNORECASE
 )
-sha512_regex = re.compile(
+sha512_regex: Pattern = re.compile(
     r"^[0-9a-f]{128}$",
     re.IGNORECASE
 )
 
 
 @validator
-def md5(value):
+def md5(value: str) -> bool:
     """
     Return whether or not given value is a valid MD5 hash.
 
@@ -39,11 +40,11 @@ def md5(value):
 
     :param value: MD5 string to validate
     """
-    return md5_regex.match(value)
+    return bool(md5_regex.match(value))
 
 
 @validator
-def sha1(value):
+def sha1(value: str) -> bool:
     """
     Return whether or not given value is a valid SHA1 hash.
 
@@ -57,11 +58,11 @@ def sha1(value):
 
     :param value: SHA1 string to validate
     """
-    return sha1_regex.match(value)
+    return bool(sha1_regex.match(value))
 
 
 @validator
-def sha224(value):
+def sha224(value: str) -> bool:
     """
     Return whether or not given value is a valid SHA224 hash.
 
@@ -75,11 +76,11 @@ def sha224(value):
 
     :param value: SHA224 string to validate
     """
-    return sha224_regex.match(value)
+    return bool(sha224_regex.match(value))
 
 
 @validator
-def sha256(value):
+def sha256(value: str) -> bool:
     """
     Return whether or not given value is a valid SHA256 hash.
 
@@ -96,11 +97,11 @@ def sha256(value):
 
     :param value: SHA256 string to validate
     """
-    return sha256_regex.match(value)
+    return bool(sha256_regex.match(value))
 
 
 @validator
-def sha512(value):
+def sha512(value: str) -> bool:
     """
     Return whether or not given value is a valid SHA512 hash.
 
@@ -118,4 +119,4 @@ def sha512(value):
 
     :param value: SHA512 string to validate
     """
-    return sha512_regex.match(value)
+    return bool(sha512_regex.match(value))

@@ -4,7 +4,7 @@ from .utils import validator
 
 
 @validator
-def card_number(value):
+def card_number(value: str) -> bool:
     """
     Return whether or not given value is a valid card number.
 
@@ -27,15 +27,25 @@ def card_number(value):
     """
     try:
         digits = list(map(int, value))
-        odd_sum = sum(digits[-1::-2])
-        even_sum = sum([sum(divmod(2 * d, 10)) for d in digits[-2::-2]])
+        odd_sum: int = sum(digits[-1::-2])
+        even_sum: int = sum([sum(divmod(2 * d, 10)) for d in digits[-2::-2]])
         return (odd_sum + even_sum) % 10 == 0
     except ValueError:
         return False
 
 
+def check_card(value: str, regex: str) -> bool:
+    """
+    Helper function to return whether or not given value is a valid card number
+    and if the value matches a given regex pattern.
+    """
+    # `re.match` needs to be casted to a bool, otherwise `None` will be
+    # returned if `card_number` is True and `re.match` is `None`.
+    return card_number(value) and bool(re.match(regex, value))
+
+
 @validator
-def visa(value):
+def visa(value: str) -> bool:
     """
     Return whether or not given value is a valid Visa card number.
 
@@ -51,12 +61,12 @@ def visa(value):
 
     :param value: Visa card number string to validate
     """
-    pattern = re.compile(r'^4')
-    return card_number(value) and len(value) == 16 and pattern.match(value)
+    regex = r'^4'
+    return check_card(value, regex) and len(value) == 16
 
 
 @validator
-def mastercard(value):
+def mastercard(value: str) -> bool:
     """
     Return whether or not given value is a valid Mastercard card number.
 
@@ -72,12 +82,12 @@ def mastercard(value):
 
     :param value: Mastercard card number string to validate
     """
-    pattern = re.compile(r'^(51|52|53|54|55|22|23|24|25|26|27)')
-    return card_number(value) and len(value) == 16 and pattern.match(value)
+    regex = r'^(51|52|53|54|55|22|23|24|25|26|27)'
+    return check_card(value, regex) and len(value) == 16
 
 
 @validator
-def amex(value):
+def amex(value: str) -> bool:
     """
     Return whether or not given value is a valid American Express card number.
 
@@ -93,12 +103,12 @@ def amex(value):
 
     :param value: American Express card number string to validate
     """
-    pattern = re.compile(r'^(34|37)')
-    return card_number(value) and len(value) == 15 and pattern.match(value)
+    regex = r'^(34|37)'
+    return check_card(value, regex) and len(value) == 15
 
 
 @validator
-def unionpay(value):
+def unionpay(value: str) -> bool:
     """
     Return whether or not given value is a valid UnionPay card number.
 
@@ -114,12 +124,12 @@ def unionpay(value):
 
     :param value: UnionPay card number string to validate
     """
-    pattern = re.compile(r'^62')
-    return card_number(value) and len(value) == 16 and pattern.match(value)
+    regex = r'^62'
+    return check_card(value, regex) and len(value) == 16
 
 
 @validator
-def diners(value):
+def diners(value: str) -> bool:
     """
     Return whether or not given value is a valid Diners Club card number.
 
@@ -135,14 +145,12 @@ def diners(value):
 
     :param value: Diners Club card number string to validate
     """
-    pattern = re.compile(r'^(30|36|38|39)')
-    return (
-        card_number(value) and len(value) in [14, 16] and pattern.match(value)
-    )
+    regex = r'^(30|36|38|39)'
+    return check_card(value, regex) and len(value) in [14, 16]
 
 
 @validator
-def jcb(value):
+def jcb(value: str) -> bool:
     """
     Return whether or not given value is a valid JCB card number.
 
@@ -158,12 +166,12 @@ def jcb(value):
 
     :param value: JCB card number string to validate
     """
-    pattern = re.compile(r'^35')
-    return card_number(value) and len(value) == 16 and pattern.match(value)
+    regex = r'^35'
+    return check_card(value, regex) and len(value) == 16
 
 
 @validator
-def discover(value):
+def discover(value: str) -> bool:
     """
     Return whether or not given value is a valid Discover card number.
 
@@ -179,5 +187,5 @@ def discover(value):
 
     :param value: Discover card number string to validate
     """
-    pattern = re.compile(r'^(60|64|65)')
-    return card_number(value) and len(value) == 16 and pattern.match(value)
+    regex = r'^(60|64|65)'
+    return check_card(value, regex) and len(value) == 16

@@ -1,8 +1,9 @@
+from typing import List, Pattern, Optional, Container
 import re
 
 from .utils import validator
 
-user_regex = re.compile(
+user_regex: Pattern = re.compile(
     # dot-atom
     r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+"
     r"(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*$"
@@ -11,7 +12,8 @@ user_regex = re.compile(
     r"""\\[\001-\011\013\014\016-\177])*"$)""",
     re.IGNORECASE
 )
-domain_regex = re.compile(
+
+domain_regex: Pattern = re.compile(
     # domain
     r'(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
     r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?$)'
@@ -19,11 +21,12 @@ domain_regex = re.compile(
     r'|^\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)'
     r'(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$',
     re.IGNORECASE)
-domain_whitelist = ['localhost']
+
+domain_whitelist: List[str] = ['localhost']
 
 
 @validator
-def email(value, whitelist=None):
+def email(value: str, whitelist: Optional[Container]=None) -> bool:
     """
     Validate an email address.
 
@@ -69,7 +72,7 @@ def email(value, whitelist=None):
         # Try for possible IDN domain-part
         try:
             domain_part = domain_part.encode('idna').decode('ascii')
-            return domain_regex.match(domain_part)
+            return bool(domain_regex.match(domain_part))
         except UnicodeError:
             return False
     return True

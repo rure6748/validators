@@ -1,8 +1,9 @@
+from typing import Any
 from functools import total_ordering
 
 
 @total_ordering
-class Min(object):
+class _Min(object):
     """
     An object that is less than any other object (except itself).
 
@@ -23,14 +24,14 @@ class Min(object):
 
     .. versionadded:: 0.2
     """
-    def __lt__(self, other):
+    def __lt__(self, other: Any) -> bool:
         if other is Min:
             return False
         return True
 
 
 @total_ordering
-class Max(object):
+class _Max(object):
     """
     An object that is greater than any other object (except itself).
 
@@ -51,11 +52,11 @@ class Max(object):
 
     .. versionadded:: 0.2
     """
-    def __gt__(self, other):
+    def __gt__(self, other: Any) -> bool:
         if other is Max:
             return False
         return True
 
 
-Min = Min()
-Max = Max()
+Min = _Min()
+Max = _Max()

@@ -1,9 +1,11 @@
+from typing import Optional
+
 from .between import between
 from .utils import validator
 
 
 @validator
-def length(value, min=None, max=None):
+def length(value: str, min=Optional[int], max=Optional[int]) -> bool:
     """
     Return whether or not the length of given string is within a specified
     range.

@@ -1,3 +1,4 @@
+from typing import Optional, Pattern, Match
 import re
 
 from .utils import validator
@@ -5,7 +6,7 @@ from .utils import validator
 ip_middle_octet = r"(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5]))"
 ip_last_octet = r"(?:\.(?:0|[1-9]\d?|1\d\d|2[0-4]\d|25[0-5]))"
 
-regex = re.compile(  # noqa: W605
+regex: Pattern = re.compile(  # noqa: W605
     r"^"
     # protocol identifier
     r"(?:(?:https?|ftp)://)"
@@ -90,11 +91,10 @@ regex = re.compile(  # noqa: W605
     re.UNICODE | re.IGNORECASE
 )
 
-pattern = re.compile(regex)
-
+pattern: Pattern = re.compile(regex)
 
 @validator
-def url(value, public=False):
+def url(value: str, public=False) -> bool:
     """
     Return whether or not given value is a valid URL.
 
@@ -145,10 +145,10 @@ def url(value, public=False):
     :param value: URL address string to validate
     :param public: (default=False) Set True to only allow a public IP address
     """
-    result = pattern.match(value)
+    result: Optional[Match] = pattern.match(value)
     if not public:
-        return result
-
-    return result and not any(
-        (result.groupdict().get(key) for key in ('private_ip', 'private_host'))
+        return bool(result)
+    private = ('private_ip', 'private_host')
+    return bool(result
+        and not any((result.groupdict().get(key) for key in private))
     )

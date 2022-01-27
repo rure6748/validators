@@ -1,17 +1,19 @@
+from typing import Optional, Union
 import re
 from hashlib import sha256
 
 from .utils import validator
 
-segwit_pattern = re.compile(
+
+segwit_pattern: re.Pattern = re.compile(
     r'^(bc|tc)[0-3][02-9ac-hj-np-z]{14,74}$')
 
 
-def validate_segwit_address(addr):
-    return segwit_pattern.match(addr)
+def validate_segwit_address(addr: str) -> bool: # Match:
+    return bool(segwit_pattern.match(addr))
 
 
-def decode_base58(addr):
+def decode_base58(addr: str) -> int:
     alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
     return sum([
         (58 ** e) * alphabet.index(i)
@@ -19,18 +21,18 @@ def decode_base58(addr):
     ])
 
 
-def validate_old_btc_address(addr):
+def validate_old_btc_address(addr: str) -> bool:
     "Validate P2PKH and P2SH type address"
     if not len(addr) in range(25, 35):
         return False
-    decoded_bytes = decode_base58(addr).to_bytes(25, "big")
+    decoded_bytes: bytes = decode_base58(addr).to_bytes(25, "big")
     header = decoded_bytes[:-4]
     checksum = decoded_bytes[-4:]
     return checksum == sha256(sha256(header).digest()).digest()[:4]
 
 
 @validator
-def btc_address(value):
+def btc_address(value: str) -> bool: # Union[Match, bool]:
     """
     Return whether or not given value is a valid bitcoin address.
 

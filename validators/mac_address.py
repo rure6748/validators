@@ -1,12 +1,13 @@
+from typing import Pattern
 import re
 
 from .utils import validator
 
-pattern = re.compile(r'^(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$')
+pattern: Pattern = re.compile(r'^(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}$')
 
 
 @validator
-def mac_address(value):
+def mac_address(value: str) -> bool:
     """
     Return whether or not given value is a valid MAC address.
 
@@ -30,4 +31,4 @@ def mac_address(value):
 
     :param value: Mac address string to validate
     """
-    return pattern.match(value)
+    return bool(pattern.match(value))
