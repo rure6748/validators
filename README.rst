@@ -10,11 +10,13 @@ require defining a schema or form. I wanted to create a simple validation
 library where validating a simple value does not require defining a form or a
 schema.
 
+Updated to add support for type hints and refactored to add a `raise_on_failure` keyword argument.
+
 .. code-block:: python
 
     >>> import validators
 
-    >>> validators.email('someone@example.com')
+    >>> validators.email('someone@example.com', raise_on_failure=True)
     True
 
 
