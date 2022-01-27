@@ -1,8 +1,7 @@
-import inspect
+from typing import Callable
+from inspect import getfullargspec
 import itertools
 from collections import OrderedDict
-
-from decorator import decorator
 
 
 class ValidationFailure(Exception):
@@ -11,53 +10,32 @@ class ValidationFailure(Exception):
         self.__dict__.update(args)
 
     def __repr__(self):
-        return u'ValidationFailure(func={func}, args={args})'.format(
-            func=self.func.__name__,
-            args=dict(
-                [(k, v) for (k, v) in self.__dict__.items() if k != 'func']
-            )
-        )
-
-    def __str__(self):
-        return repr(self)
-
-    def __unicode__(self):
-        return repr(self)
-
-    def __bool__(self):
-        return False
-
-    def __nonzero__(self):
-        return False
-
+        name = self.func.__name__,
+        args = {k: v for k, v in self.__dict__.items() if k != 'func'}
+        return f"ValidationFailure(func={name}, args={args})"
 
 def func_args_as_dict(func, args, kwargs):
     """
     Return given function's positional and key value arguments as an ordered
     dictionary.
     """
-    _getargspec = inspect.getfullargspec
-
     arg_names = list(
         OrderedDict.fromkeys(
             itertools.chain(
-                _getargspec(func)[0],
+                getfullargspec(func)[0],
                 kwargs.keys()
             )
         )
     )
-    return OrderedDict(
-        list(zip(arg_names, args)) +
-        list(kwargs.items())
-    )
+    return OrderedDict(list(zip(arg_names, args)) + list(kwargs.items()))
 
-
-def validator(func, *args, **kwargs):
+def validator(func: Callable[..., bool]) -> Callable:
     """
     A decorator that makes given function validator.
 
-    Whenever the given function is called and returns ``False`` value
-    this decorator returns :class:`ValidationFailure` object.
+    An exception will be raised if `raise_on_failure` and the
+    return value of the given function is false, otherwise a boolean
+    value is passed.
 
     Example::
 
@@ -69,17 +47,13 @@ def validator(func, *args, **kwargs):
         True
 
         >>> even(5)
-        ValidationFailure(func=even, args={'value': 5})
-
-    :param func: function to decorate
-    :param args: positional function arguments
-    :param kwargs: key value function arguments
+        False
     """
-    def wrapper(func, *args, **kwargs):
-        value = func(*args, **kwargs)
-        if not value:
-            return ValidationFailure(
-                func, func_args_as_dict(func, args, kwargs)
-            )
-        return True
-    return decorator(wrapper, func)
+    def wrapper(*args, raise_on_failure: bool=False, **kwargs) -> bool:
+        if not isinstance(raise_on_failure, bool):
+            raise TypeError("Keyword argument `raise` must be a bool.")
+        result = bool(func(*args, **kwargs))
+        if not result and raise_on_failure:
+            raise ValidationFailure(func, func_args_as_dict(func, args, kwargs))
+        return result
+    return wrapper
